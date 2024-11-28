@@ -1,0 +1,72 @@
+<!doctype html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8" />
+    <title>Anvil Beats - One Button Game Jam 2024</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.86.0/dist/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+    var config = {
+        type: Phaser.AUTO,
+        width: 800,
+        height: 600,
+        /* make responsive for mobile
+        scale: {
+            mode: Phaser.Scale.RESIZE,
+            width: 640,
+            height: 960,
+
+        },
+        */
+        backgroundColor: '#FFFFFF',
+        scene: {
+            preload: preload,
+            create: create,
+            update: update
+        }
+    };
+
+    var game = new Phaser.Game(config);
+    var raised;
+    var strike;
+    var cursors;
+
+    function preload ()
+    {
+        this.load.image('raised', 'assets/hammer-raised.png')
+        this.load.image('strike', 'assets/hammer-strike.png')
+        this.load.image('anvil', 'assets/anvil.png')
+        this.load.image('sign', 'assets/sign.png')
+    }
+
+    function create ()
+    {
+        this.add.image(400, 100, 'sign').setScale(0.3);
+        this.add.image(400, 550, 'anvil').setScale(0.3)
+        raised = this.add.sprite(160, 450, 'raised').setScale(0.3)
+        strike = this.add.sprite(290, 485, 'strike').setScale(0.3)
+        strike.setVisible(false)
+
+        cursors = this.input.keyboard.createCursorKeys();
+
+
+    }
+
+    function update ()
+    {
+        strike.setVisible(cursors.space.isDown)
+        raised.setVisible(cursors.space.isUp)
+    }
+
+</script>
+
+</body>
+</html>
