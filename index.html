@@ -31,13 +31,45 @@
             preload: preload,
             create: create,
             update: update
+        },
+        physics: {
+            default: 'arcade',
+            arcade: {
+                // debug: true
         }
+    }
     };
 
     var game = new Phaser.Game(config);
     var raised;
     var strike;
     var cursors;
+    var beats = [
+        "x---x---x---x---",
+        "x-x-x---x-x-x---",
+        "x---x---x-x-x---"
+    ]
+    var measureIndex = 0;
+    var notes;
+    var measure_millis = 3000;
+    var slider;
+    var text;
+    var hammerSfx;
+
+    function nextMeasure()
+    {
+        var children = notes.getChildren()
+        for(var i = 0; i < 16; i++) {
+            if(beats[measureIndex][i] == 'x') {
+                children[i].setVisible(true);
+            } else {
+                children[i].setVisible(false);
+            }
+        }
+
+        measureIndex = (measureIndex + 1) % beats.length
+
+    }
 
     function preload ()
     {
@@ -45,6 +77,8 @@
         this.load.image('strike', 'assets/hammer-strike.png')
         this.load.image('anvil', 'assets/anvil.png')
         this.load.image('sign', 'assets/sign.png')
+        this.load.image('note', 'assets/note.png')
+        this.load.audio('hammer', 'assets/hammer.mp3')
     }
 
     function create ()
@@ -57,14 +91,38 @@
 
         cursors = this.input.keyboard.createCursorKeys();
 
+        notes = this.physics.add.staticGroup();
+        for(var i = 0; i < 16; i++) {
+            notes.create(250+20*i, 86, "note");
+        }
+
+        slider = this.add.rectangle(240, 110, 2, 90, 0x000000);
+        this.tweens.add({
+            targets: slider,
+            x: 550,
+            duration: measure_millis,
+            repeat: -1,
+            hold: 0,
+            repeatDelay: 0,
+            ease: 'linear',
+            onStart: nextMeasure,
+            onRepeat: nextMeasure,
+            callbackScope: this
+        });
+
+        hammerSfx = this.sound.add('hammer')
+        this.input.keyboard.on('keydown-SPACE', () => hammerSfx.play())
 
     }
 
     function update ()
     {
+
         strike.setVisible(cursors.space.isDown)
         raised.setVisible(cursors.space.isUp)
     }
+
+
 
 </script>
 
