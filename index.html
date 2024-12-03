@@ -35,7 +35,7 @@
         physics: {
             default: 'arcade',
             arcade: {
-                debug: true
+                // debug: true
         }
     }
     };
@@ -46,8 +46,11 @@
     var cursors;
     var beats = [
         "x---x---x---x---",
+        "x-x-x---x---x---",
         "x-x-x---x-x-x---",
-        "x---x---x-x-x---"
+        "x---x---x-x-x---",
+        "x---x---xxxxx---",
+        "x-x-xxxxx-x-xxxx"
     ]
     var measureIndex = 0;
     var notes;
@@ -56,6 +59,7 @@
     var text;
     var hammerSfx;
     var exampleMeasure = false;
+    var playerNotes;
 
     function nextMeasure()
     {
@@ -63,6 +67,7 @@
             exampleMeasure = false;
         } else {
             exampleMeasure = true;
+            playerNotes.clear(true, true);
             var children = notes.getChildren()
             for(var i = 0; i < 16; i++) {
                 if(beats[measureIndex][i] == 'x') {
@@ -104,6 +109,7 @@
             notes.create(250+20*i, 86, "note");
         }
 
+        playerNotes = this.add.group();
         slider = this.add.rectangle(240, 110, 2, 90, 0x000000);
         this.physics.add.existing(slider)
         this.tweens.add({
@@ -123,6 +129,7 @@
         this.input.keyboard.on('keydown-SPACE', () => {
             if(!exampleMeasure) {
                 hammerSfx.play();
+                playerNotes.create(slider.x, 140, "note")
             }
             
         })
