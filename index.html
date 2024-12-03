@@ -35,7 +35,7 @@
         physics: {
             default: 'arcade',
             arcade: {
-                // debug: true
+                debug: true
         }
     }
     };
@@ -55,19 +55,27 @@
     var slider;
     var text;
     var hammerSfx;
+    var exampleMeasure = false;
 
     function nextMeasure()
     {
-        var children = notes.getChildren()
-        for(var i = 0; i < 16; i++) {
-            if(beats[measureIndex][i] == 'x') {
-                children[i].setVisible(true);
-            } else {
-                children[i].setVisible(false);
+        if(exampleMeasure) {
+            exampleMeasure = false;
+        } else {
+            exampleMeasure = true;
+            var children = notes.getChildren()
+            for(var i = 0; i < 16; i++) {
+                if(beats[measureIndex][i] == 'x') {
+                    children[i].setVisible(true);
+                    children[i].awaitingHit = true;
+                } else {
+                    children[i].setVisible(false);
+                    children[i].awaitingHit = false;
+                }
             }
-        }
 
-        measureIndex = (measureIndex + 1) % beats.length
+            measureIndex = (measureIndex + 1) % beats.length
+        }
 
     }
 
@@ -97,6 +105,7 @@
         }
 
         slider = this.add.rectangle(240, 110, 2, 90, 0x000000);
+        this.physics.add.existing(slider)
         this.tweens.add({
             targets: slider,
             x: 550,
@@ -111,7 +120,19 @@
         });
 
         hammerSfx = this.sound.add('hammer')
-        this.input.keyboard.on('keydown-SPACE', () => hammerSfx.play())
+        this.input.keyboard.on('keydown-SPACE', () => {
+            if(!exampleMeasure) {
+                hammerSfx.play();
+            }
+            
+        })
+        this.physics.add.collider(slider, notes, (_slider, note) => {
+            if(note.awaitingHit) {
+                hammerSfx.play();
+                note.awaitingHit = false;
+            }
+        });
+
 
     }
 
